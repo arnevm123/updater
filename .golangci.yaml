@@ -1,0 +1,315 @@
+version: "2"
+
+run:
+  concurrency: 4
+  timeout: 10m
+  issues-exit-code: 1
+  tests: true # lint test files
+  # skip-dirs:
+  # - src/external_libs
+  # skip-files:
+  #  - "protobuf/.*.go"
+  modules-download-mode: readonly
+  allow-parallel-runners: false
+  go: "" # empty -> fetch go version from go.mod
+linters:
+  default: all
+  enable:
+    # Check for pass []any as any in variadic func(...any).
+    # Rare case but saved me from debugging a few times.
+    - asasalint
+    # Symbol `∆` instead of `delta` looks cool but no thanks.
+    - asciicheck
+    # Checks for dangerous unicode character sequences.
+    # Super rare but why not to be a bit paranoid?
+    - bidichk
+    # Checks whether HTTP response body is closed successfully.
+    - bodyclose
+    # Check whether the function uses a non-inherited context.
+    - contextcheck
+    - decorder
+    # Tool for code clone detection.
+    - dupl
+    # Check for two durations multiplied together.
+    - durationcheck
+    # Forces to not skip error check.
+    - errcheck
+    # Checks `Err-` prefix for var and `-Error` suffix for error type.
+    - errname
+    # Suggests to use `%w` for error-wrapping.
+    - errorlint
+    # Checks for `exhaustive` switch statements.
+    # We might want to switch to explicit mode in the future
+    # https://pkg.go.dev/github.com/nishanths/exhaustive#section-documentation
+    - exhaustive
+    # Checks for pointers to enclosing loop variables.
+    - copyloopvar
+    # Forbids fmt.println and others from being used.
+    - forbidigo
+    # Finds forced type assertions, very good for juniors.
+    - forcetypeassert
+    # As you already know I'm a co-author. It would be strange to not use
+    # one of my warmly loved projects.
+    - gocritic
+    # Reports magic consts. Might be noisy but still good.
+    - mnd
+    # Powerful security-oriented linter. But requires some time to
+    # configure it properly, see https://github.com/securego/gosec#available-rules
+    - gosec
+    # Official Go tool. Must have.
+    - govet
+    # Detects when assignments to existing variables are not used
+    - ineffassign
+    # Fix all the misspells, amazing thing.
+    - misspell
+    # Finds naked/bare returns and requires change them.
+    - nakedret
+    # Both require a bit more explicit returns.
+    - nilerr
+    - nilnil
+    # Finds sending HTTP request without context.Context.
+    - noctx
+    # Finds misuse of Sprintf with host:port in a URL. Cool but rare.
+    - nosprintfhostport
+    # Finds slices that could potentially be pre-allocated.
+    - prealloc
+    # Finds shadowing of Go's predeclared identifiers.
+    - predeclared
+    # Lint your Prometheus metrics name.
+    - promlinter
+    # Checks that package variables are not reassigned.
+    - reassign
+    # Drop-in replacement of `golint`.
+    - revive
+    # Somewhat similar to `bodyclose` but for `database/sql` package.
+    - sqlclosecheck
+    # I have found that it's not the same as staticcheck binary :\
+    - staticcheck
+    # Check struct tags.
+    - tagliatelle
+    # Test-related checks. All of them are good.
+    - usetesting
+    - testableexamples
+    - thelper
+    - tparallel
+    # Remove unnecessary type conversions, make code cleaner
+    - unconvert
+    # Might be noisy but better to know what is unused
+    - unparam
+    # Must have. Finds unused declarations.
+    - unused
+    # Detect the possibility to use variables/constants from stdlib.
+    - usestdlibvars
+    # Finds wasted assignment statements.
+    - wastedassign
+  disable:
+    # Detects struct contained context.Context field. Not a problem.
+    - containedctx
+    # Checks function and package cyclomatic complexity.
+    - cyclop
+    # Check declaration order of types, consts, vars and funcs.
+    # - decorder
+    # Checks if package imports are in a list of acceptable packages.
+    - depguard
+    # Checks assignments with too many blank identifiers. Very rare.
+    - dogsled
+    # Find duplicate words, rare.
+    - dupword
+    - err113
+    # I'm fine to check the error from json.Marshal ¯\_(ツ)_/¯
+    - errchkjson
+    # All SQL queries MUST BE covered with tests.
+    - exhaustruct
+    - funcorder
+    # I might have long but a simple function.
+    - funlen
+    # I'm not a fan of ginkgo and gomega packages.
+    - ginkgolinter
+    # Checks that compiler directive comments (//go:) are valid. Rare.
+    - gocheckcompilerdirectives
+    # Globals and init() are ok.
+    - gochecknoglobals
+    - gochecknoinits
+    # Same as `cyclop` linter (see above)
+    - gocognit
+    - goconst
+    - gocyclo
+    # Forces to put `.` at the end of the comment. Code is poetry.
+    - godot
+    # TODO and friends are ok.
+    - godox
+    # I don't use file headers.
+    - goheader
+    # Allow or ban replace directives in go.mod
+    # or force explanation for retract directives.
+    - gomoddirectives
+    # Allowed/blocked packages to import. I prefer to do it manually.
+    - gomodguard
+    # Printf-like functions must have -f.
+    - goprintffuncname
+    # Groupt declarations, I prefer manually.
+    - grouper
+    # Checks imports aliases, rare.
+    - importas
+    # Forces tiny interfaces, very subjective.
+    - interfacebloat
+    # Accept interfaces, return types. Not always.
+    - ireturn
+    # I don't set line length. 120 is fine by the way ;)
+    - lll
+    # Some log checkers, might be useful.
+    - loggercheck
+    # Maintainability index of each function, subjective.
+    - maintidx
+    # Slice declarations with non-zero initial length. Not my case.
+    - makezero
+    # Enforce tags in un/marshaled structs. Cool but not my case.
+    - musttag
+    # Deeply nested if statements, subjective.
+    - nestif
+    # Forces newlines in some places.
+    - nlreturn
+    # Reports all named returns, not that bad.
+    - nonamedreturns
+    # Forces comment why another check is disabled.
+    # Better not to have //nolint: at all ;)
+    - nolintlint
+    # I don't use t.Parallel() that much.
+    - paralleltest
+    # no need
+    - rowserrcheck
+    # Conflicts with gofumpt
+    - tagalign
+    # Often non-`_test` package is ok.
+    - testpackage
+    # I'm fine with long variable names with a small scope.
+    - varnamelen
+    # gofmt,gofumpt covers that (from what I know).
+    - whitespace
+    # Don't find it useful to wrap all errors from external packages.
+    - wrapcheck
+    # Forces you to use empty lines. Great if configured correctly.
+    # I mean there is an agreement in a team.
+    - wsl
+    - wsl_v5
+    # Allow inline errors
+    - noinlineerr
+  settings:
+    revive:
+      enable-all-rules: true
+      rules:
+        - name: unused-parameter
+          arguments:
+            - allowRegex: "^_"
+        - name: var-naming
+          arguments:
+            # don't enforce
+            - []
+            # enforce
+            - ["MQTT"]
+        - name: add-constant
+          disabled: true
+        - name: exported
+          disabled: true
+        - name: get-return
+          disabled: true
+        - name: unhandled-error
+          disabled: true
+        - name: unused-receiver
+          disabled: true
+        - name: cognitive-complexity
+          disabled: true
+        - name: line-length-limit
+          disabled: true
+        - name: function-length
+          disabled: true
+        - name: cyclomatic
+          disabled: true
+          # Method differs only by capitalization
+        - name: confusing-naming
+          disabled: true
+        - name: flag-parameter
+          disabled: true
+        - name: max-public-structs
+          disabled: true
+        - name: package-comments
+          disabled: true
+    mnd:
+      ignored-numbers: ["24","60","1000"]
+    gocritic:
+      enabled-tags:
+        - diagnostic
+        - experimental
+        - opinionated
+        - performance
+        - style
+      disabled-checks:
+        - unnamedResult
+        - whyNoLint
+        # These 3 will detect many cases, but they do sense
+        # if it's performance oriented code
+        - hugeParam
+        - rangeExprCopy
+        - rangeValCopy
+    errcheck:
+      check-type-assertions: true # Report `a := b.(MyStruct)` when `a, ok := ...` should be.    # Report skipped checks:`num, _ := strconv.Atoi(numStr)`.
+      check-blank: false # allow ignoring err by assigning to _
+      exclude-functions:
+        - io/ioutil.ReadFile
+        - io.Copy(*bytes.Buffer)
+        - io.Copy(os.Stdout)
+        - (io.Closer).Close
+        - (*os.File).Close
+        - (*database/sql.Rows).Close
+        - (*database/sql.DB).Close
+        - (*database/sql.DB).Close
+        - (*compress/gzip.Writer).Close
+        - (*compress/gzip.Reader).Close
+        - (*archive/tar.Writer).Close
+        - (golang.org/x/sys/windows/registry.Key).Close
+        - (*golang.org/x/sys/windows/svc/mgr.Service).Close
+    forbidigo:
+      # Forbid the following identifiers (list of regexp).
+      # Default: ["^(fmt\\.Print(|f|ln)|print|println)$"]
+      forbid:
+        - pattern: ^fmt\.Print.*$
+          msg: Do not commit print statements.
+        - pattern: ^spew\.(ConfigState\.)?Dump$
+          msg: Do not commit dump statements.
+        - pattern: ^litter\.(ConfigState\.)?Dump$
+          msg: Do not commit dump statements.
+    govet:
+      disable:
+        - fieldalignment # I'm ok to waste some bytes
+    gosec:
+      excludes:
+        - G104 # Already covered by errcheck
+    nakedret:
+      max-func-lines: 1
+    tagliatelle:
+      case:
+        rules:
+          json: snake
+          yaml: snake
+          xml: camel
+          bson: camel
+          avro: snake
+          mapstructure: kebab
+formatters:
+  enable:
+    - gofmt
+    - gofumpt
+    - goimports
+    - golines
+  settings:
+    golines:
+      max-len: 120
+      tab-len: 4
+      shorten-comments: false
+      reformat-tags: true
+      chain-split-dots: true
+issues:
+  max-issues-per-linter: 0
+  max-same-issues: 0
+  new: false
+  fix: false
